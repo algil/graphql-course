@@ -18,7 +18,7 @@ const resolvers = {
       return 'Antonio Gil';
     },
     location() {
-      return 'Málaga (Spain)';
+      return 'Málaga (Andalucía, Spain)';
     },
     bio() {
       return 'Music lover and guitar player on Zoonámbulos band';
