@@ -2,26 +2,39 @@ import { GraphQLServer } from 'graphql-yoga';
 
 const typeDefs = `
   type Query {
-    hello: String!
+    me: User!
+    post: Post!
+  }
+  type User {
+    id: ID!
     name: String!
-    location: String!
-    bio: String!
+    email: String!
+    age: Int
+  }
+  type Post {
+    id: ID!
+    title: String!
+    body: String!
+    published: Boolean!
   }
 `;
 
 const resolvers = {
   Query: {
-    hello() {
-      return 'This is my first query';
+    me() {
+      return {
+        id: '1234',
+        name: 'Antonio Gil',
+        email: 'antonio.gil@aswecode.com'
+      };
     },
-    name() {
-      return 'Antonio Gil';
-    },
-    location() {
-      return 'Málaga (Andalucía, Spain)';
-    },
-    bio() {
-      return 'Music lover and guitar player on Zoonámbulos band';
+    post() {
+      return {
+        id: '4321',
+        title: 'The post title',
+        body: 'The content body',
+        published: true
+      };
     }
   }
 };
