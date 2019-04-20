@@ -1,9 +1,31 @@
 import { GraphQLServer } from 'graphql-yoga';
 
+const posts = [
+  {
+    id: '1',
+    title: 'Megalodon',
+    body: 'A very big shark in the sea',
+    published: true
+  },
+  {
+    title: '2',
+    title: 'Aquaman',
+    body: 'The king of the sea and oceans',
+    published: true
+  },
+  {
+    id: '3',
+    title: 'Avengers Infinity War',
+    body: 'The best Marvel heroes fighting against the evil Thanos',
+    published: false
+  }
+];
+
 const typeDefs = `
   type Query {
     me: User!
     post: Post!
+    posts(query: String): [Post!]!
   }
   type User {
     id: ID!
@@ -35,6 +57,19 @@ const resolvers = {
         body: 'The content body',
         published: true
       };
+    },
+    posts(parent, args) {
+      if (!args.query) {
+        return posts;
+      }
+
+      let query = args.query.toLowerCase();
+      return posts.filter(({ title, body }) => {
+        return (
+          title.toLowerCase().includes(query) ||
+          body.toLowerCase().includes(query)
+        );
+      });
     }
   }
 };
