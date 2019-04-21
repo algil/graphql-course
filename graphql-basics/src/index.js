@@ -29,7 +29,7 @@ const posts = [
     author: '1'
   },
   {
-    title: '2',
+    id: '2',
     title: 'Aquaman',
     body: 'The king of the sea and oceans',
     published: true,
@@ -44,12 +44,40 @@ const posts = [
   }
 ];
 
+const comments = [
+  {
+    id: '1',
+    text: 'A fabulous comment',
+    author: '2',
+    post: '1'
+  },
+  {
+    id: '2',
+    text: 'This is the second comment',
+    author: '2',
+    post: '1'
+  },
+  {
+    id: '3',
+    text: 'Another bored comment',
+    author: '1',
+    post: '1'
+  },
+  {
+    id: '4',
+    text: 'And finally the las comment',
+    author: '3',
+    post: '2'
+  }
+];
+
 const typeDefs = `
   type Query {
     me: User!
     post: Post!
     users: [User!]!
     posts(query: String): [Post!]!
+    comments: [Comment!]!
   }
   type User {
     id: ID!
@@ -57,6 +85,7 @@ const typeDefs = `
     email: String!
     age: Int
     posts: [Post!]!
+    comments: [Comment!]!
   }
   type Post {
     id: ID!
@@ -64,6 +93,13 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment!]
+  }
+  type Comment {
+    id: ID!
+    text: String!
+    author: User!
+    post: Post!
   }
 `;
 
@@ -99,16 +135,33 @@ const resolvers = {
           body.toLowerCase().includes(query)
         );
       });
+    },
+    comments() {
+      return comments;
     }
   },
   Post: {
     author(parent) {
       return users.find(user => user.id === parent.author);
+    },
+    comments(parent) {
+      return comments.filter(comment => comment.post === parent.id);
     }
   },
   User: {
     posts(parent) {
       return posts.filter(post => post.author === parent.id);
+    },
+    comments(parent) {
+      return comments.filter(comment => comment.author === parent.id);
+    }
+  },
+  Comment: {
+    author(parent) {
+      return users.find(user => user.id === parent.author);
+    },
+    post(parent) {
+      return posts.find(post => post.id === parent.post);
     }
   }
 };
