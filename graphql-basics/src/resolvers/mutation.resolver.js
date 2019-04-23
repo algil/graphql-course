@@ -157,11 +157,16 @@ export default {
 
     db.comments.push(comment);
 
-    pubSub.publish(`post ${post.id}`, { comment });
+    pubSub.publish(`post ${post.id}`, {
+      comment: {
+        mutation: 'CREATED',
+        data: comment
+      }
+    });
     return comment;
   },
 
-  updateComment(parent, { id, data }, { db }) {
+  updateComment(parent, { id, data }, { db, pubSub }) {
     const comment = db.comments.find(comment => comment.id === id);
     if (!comment) {
       throw new Error('Comment not found');
@@ -170,16 +175,32 @@ export default {
     if (data.text) {
       comment.text = data.text;
     }
+
+    pubSub.publish(`post ${comment.post}`, {
+      comment: {
+        mutation: 'UPDATED',
+        data: comment
+      }
+    });
+
     return comment;
   },
 
-  deleteComment(parent, { id }, { db }) {
+  deleteComment(parent, { id }, { db, pubSub }) {
     const commentIndex = db.comments.findIndex(comment => comment.id === id);
     if (commentIndex === -1) {
       throw new Error('Comment not found');
     }
 
-    const deletedComments = db.comments.splice(commentIndex, 1);
-    return deletedComments[0];
+    const [deletedComment] = db.comments.splice(commentIndex, 1);
+
+    pubSub.publish(`post ${deletedComment.post}`, {
+      comment: {
+        mutation: 'DELETED',
+        data: deletedComment
+      }
+    });
+
+    return deletedComment;
   }
 };
